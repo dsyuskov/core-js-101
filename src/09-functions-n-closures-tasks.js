@@ -23,8 +23,11 @@
  *   getComposition(Math.sin, Math.asin)(x) => Math.sin(Math.asin(x))
  *
  */
-function getComposition(/* f, g */) {
-  throw new Error('Not implemented');
+function getComposition(f, g) {
+  function outer(x) {
+    return f(g(x));
+  }
+  return outer;
 }
 
 
@@ -44,8 +47,8 @@ function getComposition(/* f, g */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return (num) => num ** exponent;
 }
 
 
@@ -62,8 +65,21 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...arg) {
+  switch (arguments.length) {
+    case 3: {
+      return (x) => arg[0] * (x ** arg[0]) + arg[1] * x + arg[2];
+    }
+    case 2: {
+      return (x) => x * arg[0] + arg[1];
+    }
+    case 1: {
+      return () => arg[0];
+    }
+    default: {
+      return () => null;
+    }
+  }
 }
 
 
@@ -81,10 +97,15 @@ function getPolynom() {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  if (memoize.memCurr === undefined) {
+    memoize.memCurr = func();
+    return () => null;
+  }
+  memoize.memPrev = memoize.memCurr;
+  memoize.memCurr = func();
+  return () => memoize.memPrev;
 }
-
 
 /**
  * Returns the function trying to call the passed function and if it throws,
@@ -147,10 +168,12 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  function f2(...argsInner) {
+    return fn(...args1, ...argsInner);
+  }
+  return f2;
 }
-
 
 /**
  * Returns the id generator function that returns next integer starting
@@ -169,8 +192,17 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let counter;
+  function inner() {
+    if (counter === undefined) {
+      counter = startFrom;
+      return startFrom;
+    }
+    counter += 1;
+    return counter;
+  }
+  return inner;
 }
 
 
